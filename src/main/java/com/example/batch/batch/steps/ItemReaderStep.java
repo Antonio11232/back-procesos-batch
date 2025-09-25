@@ -23,11 +23,11 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-public class ItemReaderStep implements Tasklet{
+public class ItemReaderStep implements Tasklet,StepExecutionListener{
 
 
     private final ResourceLoader resourceLoader;
-    List<Map<String,Object>> listadoPersonas;
+    List<Map<String,Object>> personsListReader;
 
     public ItemReaderStep(ResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
@@ -51,13 +51,13 @@ public class ItemReaderStep implements Tasklet{
                 .withSkipLines(1)
                 .build();
 
-        List<Map<String,Object>> personsListReader = new ArrayList<>();
+
 
         String[] registroActual;
 
         while ((registroActual = csvReader.readNext()) != null) {
-            Map<String,Object> personMap = new HashMap<>();
 
+            Map<String,Object> personMap = new HashMap<>();
             personMap.put("name",registroActual[0]);
             personMap.put("lastName",registroActual[1]);
             personMap.put("age",Integer.parseInt(registroActual[2]));
@@ -68,12 +68,18 @@ public class ItemReaderStep implements Tasklet{
         csvReader.close();
 
         log.info("-------> Fin de STEP-READER");
-        chunkContext.getStepContext()
-                .getStepExecution()
-                .getJobExecution()
-                .getExecutionContext()
-                .put("personsListReader",personsListReader);
 
         return RepeatStatus.FINISHED;
+    }
+
+    @Override
+    public void beforeStep(StepExecution stepExecution) {
+        personsListReader = new ArrayList<>();
+    }
+
+    @Override
+    public ExitStatus afterStep(StepExecution stepExecution) {
+         stepExecution.getJobExecution().getExecutionContext().put("personsListReader",personsListReader);
+         return ExitStatus.COMPLETED;
     }
 }
