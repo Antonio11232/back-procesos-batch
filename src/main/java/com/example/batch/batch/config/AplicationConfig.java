@@ -13,7 +13,8 @@ public class AplicationConfig {
     public DataSource dataSource(){
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dataSource.setUrl("jdbc:mysql://localhost:3306/batch_database");
+        //dataSource.setUrl("jdbc:mysql://localhost:3306/batch_database");// Utilizar sin Docker
+        dataSource.setUrl("jdbc:mysql://host.docker.internal:3306/proceduresDB");//Utilizar con dokcer
         dataSource.setUsername("root");
         dataSource.setPassword("root");
 
