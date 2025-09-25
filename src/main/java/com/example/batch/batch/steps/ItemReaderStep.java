@@ -6,7 +6,10 @@ import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepContribution;
+import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
@@ -15,13 +18,16 @@ import org.springframework.core.io.ResourceLoader;
 import java.io.FileReader;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
-public class ItemReaderStep implements Tasklet {
+public class ItemReaderStep implements Tasklet{
 
 
     private final ResourceLoader resourceLoader;
+    List<Map<String,Object>> listadoPersonas;
 
     public ItemReaderStep(ResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
@@ -45,16 +51,18 @@ public class ItemReaderStep implements Tasklet {
                 .withSkipLines(1)
                 .build();
 
-        List<Person> personList = new ArrayList<>();
+        List<Map<String,Object>> personsListReader = new ArrayList<>();
+
         String[] registroActual;
 
         while ((registroActual = csvReader.readNext()) != null) {
-            Person person = new Person();
-            person.setName(registroActual[0]);
-            person.setLastName(registroActual[1]);
-            person.setAge(Integer.parseInt(registroActual[2]));
+            Map<String,Object> personMap = new HashMap<>();
 
-            personList.add(person);
+            personMap.put("name",registroActual[0]);
+            personMap.put("lastName",registroActual[1]);
+            personMap.put("age",Integer.parseInt(registroActual[2]));
+
+            personsListReader.add(personMap);
         }
 
         csvReader.close();
@@ -64,7 +72,7 @@ public class ItemReaderStep implements Tasklet {
                 .getStepExecution()
                 .getJobExecution()
                 .getExecutionContext()
-                .put("personList",personList);
+                .put("personsListReader",personsListReader);
 
         return RepeatStatus.FINISHED;
     }
