@@ -34,7 +34,7 @@ public class ItemWriterStep implements Tasklet {
             personDb.setName((String) person.get("name"));
             personDb.setLastName((String) person.get("lastName"));
             personDb.setAge((Integer) person.get("age"));
-            personDb.setName((String) person.get("insertionDate"));
+            personDb.setInsertionDate((String) person.get("insertionDate"));
             personasList.add(personDb);
         }
 

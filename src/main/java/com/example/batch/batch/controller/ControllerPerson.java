@@ -6,10 +6,7 @@ import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -23,7 +20,6 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping(name = "/person/v1")
 public class ControllerPerson {
 
     private final JobLauncher jobLauncher;
@@ -34,7 +30,7 @@ public class ControllerPerson {
         this.job = job;
     }
 
-    @PostMapping(name = "/cargarArchivo")
+    @PostMapping("/cargarArchivo")
     public ResponseEntity<?> receiveFile(@RequestParam(name = "file") MultipartFile multipartFile) {
         String fileName = multipartFile.getOriginalFilename();
 
@@ -65,4 +61,8 @@ public class ControllerPerson {
         }
     }
 
+    @GetMapping("/hola")
+    public ResponseEntity<?> hola(){
+        return ResponseEntity.ok("SALUDOS");
+    }
 }
